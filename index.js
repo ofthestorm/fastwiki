@@ -1,0 +1,83 @@
+#!/usr/bin/env node
+
+const request = require('request');
+const chalk = require('chalk'); //Terminal string styling done right
+const fs = require('fs');
+const Spinner = require('cli-spinner').Spinner;
+const spinner = new Spinner('%s loading...');
+const urlencode = require('urlencode');
+const home = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+const configFile = home + "/config.json";
+let result_color = 'green';
+let warn_color = 'red';
+
+
+spinner.setSpinnerString('⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏');
+// spinner.setSpinnerString('✶✸✹✺✹✷');
+
+spinner.start();
+
+const readFile = (filename, encoding) => {
+
+    try {
+        return fs.readFileSync(filename).toString(encoding);
+    }
+    catch (e) {
+        return null;
+    }
+};
+
+const config = JSON.parse(readFile(configFile,"utf8"));
+const input = process.argv.slice(2);
+const word = input.join(' ');
+
+const URL = `https://en.wikipedia.org/w/api.php?format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=10&prop=pageimages|extracts&pilimit=max&exintro&explaintext&exsentences=1&exlimit=max&origin=*&gsrsearch=${urlencode(word)}`
+const options = {
+    'url':URL
+};
+
+if(config){
+    if(config.proxy){
+        options.proxy = config.proxy;
+    }
+    if(config.color){
+        result_color = config.color;
+    }
+}
+
+const result_color_output = chalk.keyword(result_color);
+const warn_color_output = chalk.keyword(warn_color);
+
+
+request(options,(error, response, body)=>{
+
+    var result = 'No result!';
+
+if (!error && response.statusCode == 200) {
+    var info = JSON.parse(body);
+
+    if(info.hasOwnProperty("query")) {
+        var pageIds=[];
+        for (var pageid in info.query.pages) {
+            pageIds.push(pageid);
+        }
+
+        spinner.stop(true);
+        console.log("\n");
+        // for (i=0; i<3; i++) {
+        //     console.log(result_color_output(info.query.pages[pageIds[i]].title + " : " + info.query.pages[pageIds[i]].extract));
+        // }
+        console.log(result_color_output(info.query.pages[pageIds[0]].title + " : " + info.query.pages[pageIds[0]].extract));
+
+        console.log("\n");
+        // return;
+    } else {
+        spinner.stop(true);
+        console.log("\n");
+        console.log(warn_color_output(result));
+        console.log("\n");
+    }
+
+}
+
+});
