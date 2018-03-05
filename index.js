@@ -10,6 +10,7 @@ const home = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME']
 const configFile = home + "/config.json";
 let result_color = 'green';
 let warn_color = 'red';
+let title_color = 'white';
 
 
 spinner.setSpinnerString('⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏');
@@ -47,7 +48,7 @@ if(config){
 
 const result_color_output = chalk.keyword(result_color);
 const warn_color_output = chalk.keyword(warn_color);
-
+const title_color_output = chalk.underline.keyword(title_color);
 
 request(options,(error, response, body)=>{
 
@@ -64,13 +65,10 @@ if (!error && response.statusCode == 200) {
 
         spinner.stop(true);
         console.log("\n");
-        // for (i=0; i<3; i++) {
-        //     console.log(result_color_output(info.query.pages[pageIds[i]].title + " : " + info.query.pages[pageIds[i]].extract));
-        // }
-        console.log(result_color_output(info.query.pages[pageIds[0]].title + " : " + info.query.pages[pageIds[0]].extract));
+        console.log(title_color_output(info.query.pages[pageIds[0]].title));
+        console.log(result_color_output(info.query.pages[pageIds[0]].extract));
 
         console.log("\n");
-        // return;
     } else {
         spinner.stop(true);
         console.log("\n");
