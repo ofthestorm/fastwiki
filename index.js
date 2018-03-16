@@ -8,6 +8,7 @@ const spinner = new Spinner('%s loading...');
 const urlencode = require('urlencode');
 const home = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 const configFile = home + "/config.json";
+const yargs = require('yargs');
 let result_color = 'green';
 let warn_color = 'red';
 let title_color = 'white';
@@ -29,8 +30,11 @@ const readFile = (filename, encoding) => {
 };
 
 const config = JSON.parse(readFile(configFile,"utf8"));
-const input = process.argv.slice(2);
-const word = input.join(' ');
+// const input = process.argv.slice(2);
+// const word = input.join(' ');
+const wordList = yargs.argv;
+const para = yargs.alias('l', 'limit').argv;
+var word = (wordList._).join(' ');
 
 const URL = `https://en.wikipedia.org/w/api.php?format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=10&prop=pageimages|extracts&pilimit=max&exintro&explaintext&exsentences=1&exlimit=max&origin=*&gsrsearch=${urlencode(word)}`
 const options = {
@@ -65,9 +69,19 @@ if (!error && response.statusCode == 200) {
 
         spinner.stop(true);
         console.log("\n");
-        console.log(title_color_output(info.query.pages[pageIds[0]].title));
-        console.log(result_color_output(info.query.pages[pageIds[0]].extract));
 
+        var limit;
+
+        if(para.l === undefined) {
+            limit = 3;
+        } else {
+            limit = para.l;
+        }
+
+        for(let i = 0; i < limit; i++) {
+            console.log(title_color_output(info.query.pages[pageIds[i]].title));
+            console.log(result_color_output(info.query.pages[pageIds[i]].extract));
+        }
         console.log("\n");
     } else {
         spinner.stop(true);
