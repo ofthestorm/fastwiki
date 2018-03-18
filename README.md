@@ -8,7 +8,7 @@ A CLI tool for Wikipedia query based on npm. Use [MediaWiki](https://www.mediawi
 $ npm install -g fastwiki
 ```
 
-## How to use 
+## How to use
 
 Return 3 results by default.
 ```bash
@@ -19,4 +19,5 @@ Choose the number of results.
 $ wiki <keyword> -l <number>
 $ wiki <keyword> --limit <number>
 ```
-![](https://ws1.sinaimg.cn/large/006tKfTcly1fp1oqjngdng30xi0mc4qr.gif)
+![](https://ws3.sinaimg.cn/large/006tKfTcly1fph5taf5lag30uc0ma7qq.gif)
+
